@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -57,12 +58,23 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        // "auth" 클레임이 없을 경우를 대비하여 기본값 설정 또는 예외 처리
+        Object authClaim = claims.get("auth");
+        String authString = (authClaim != null) ? authClaim.toString() : ""; // null 체크
 
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        Collection<? extends GrantedAuthority> authorities = new ArrayList<>();
+        if (!authString.isEmpty()) { // 비어있지않은 경우에만 파싱
+            authorities = Arrays.stream(authString.split(","))
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        }
+
+        // Spring Security의 User 객체 사용. 패스워드는 토큰 기반 인증이므로 빈 문자열.
+        UserDetails principal = new org.springframework.security.core.userdetails.User(
+                claims.getSubject(),
+                "", // 패스워드 (토큰 기반 인증에서는 필요 없음)
+                authorities // 파싱된 권한들
+        );
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

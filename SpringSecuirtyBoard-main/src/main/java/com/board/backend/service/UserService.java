@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -26,7 +28,7 @@ public class UserService {
         userRepository.save(User.builder()
                 .username(req.getUsername())
                 .password(passwordEncoder.encode(req.getPassword()))
-                .role(Role.ROLE_USER)
+                .roles(Collections.singleton(Role.ROLE_USER)) // Set<Role>에 ROLE_USER 추가
                 .build());
     }
 
