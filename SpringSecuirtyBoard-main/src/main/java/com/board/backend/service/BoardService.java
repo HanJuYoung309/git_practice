@@ -33,9 +33,14 @@ public class BoardService {
         return BoardResponse.fromEntity(boardRepository.save(board));
     }
 
-    public Page<BoardResponse> getAllBoards(Pageable pageable) {
-        return boardRepository.findAll(pageable)
-                .map(BoardResponse::fromEntity);
+    public Page<BoardResponse> getAllBoards(Pageable pageable, String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            // 예시: 제목과 내용에서 keyword를 검색
+            return boardRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
+                    .map(BoardResponse::fromEntity);
+        }
+        // 검색어가 없는 경우 기존처럼 모든 게시글 반환
+        return boardRepository.findAll(pageable).map(BoardResponse::fromEntity);
     }
 
     public BoardResponse getBoardById(Long id) {

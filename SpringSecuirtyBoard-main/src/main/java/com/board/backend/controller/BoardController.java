@@ -37,10 +37,12 @@ public class BoardController {
 
     @GetMapping
     public ResponseEntity<Page<BoardResponse>> getAllBoards(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<BoardResponse> boards = boardService.getAllBoards(pageable);
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) String keyword) { // 검색어 파라미터 추가
+        Page<BoardResponse> boards = boardService.getAllBoards(pageable, keyword); // service layer에 keyword 전달
         return ResponseEntity.ok(boards);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getBoardById(@PathVariable Long id) {
