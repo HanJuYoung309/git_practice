@@ -72,5 +72,11 @@ public class BoardService {
             throw new IllegalArgumentException("게시글 삭제 권한이 없습니다.");
         }
         boardRepository.delete(board);
+
+
+    }
+
+    public boolean existsById(Long boardId) {
+        return boardRepository.existsById(boardId);
     }
 }

@@ -1,8 +1,11 @@
 package com.board.backend.controller;
 
+import com.board.backend.domain.Board;
+import com.board.backend.domain.Reply;
 import com.board.backend.dto.BoardRequest;
 import com.board.backend.dto.BoardResponse;
 import com.board.backend.service.BoardService;
+import com.board.backend.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,8 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    private final ReplyService replyService;
+
     @PostMapping
     public ResponseEntity<?> createBoard(@RequestBody @Valid BoardRequest request,
                                          @AuthenticationPrincipal UserDetails userDetails) {
@@ -39,8 +44,8 @@ public class BoardController {
     public ResponseEntity<Page<BoardResponse>> getAllBoards(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) String keyword) { // 검색어 파라미터 추가
-        Page<BoardResponse> boards = boardService.getAllBoards(pageable, keyword); // service layer에 keyword 전달
-        return ResponseEntity.ok(boards);
+           Page<BoardResponse> boards = boardService.getAllBoards(pageable, keyword); // service layer에 keyword 전달
+           return ResponseEntity.ok(boards);
     }
 
 
@@ -76,4 +81,5 @@ public class BoardController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 }

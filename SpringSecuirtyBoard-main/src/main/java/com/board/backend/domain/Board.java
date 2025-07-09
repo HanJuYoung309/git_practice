@@ -41,4 +41,15 @@ public class Board {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    // 댓글 목록 추가
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // Reply 엔티티의 JsonBackReference와 짝을 이룸
+    private List<Reply> replies = new ArrayList<>(); // 해당 게시글에 달린 댓글들
+
+    // 게시글 업데이트 메서드 (예시)
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
 }
